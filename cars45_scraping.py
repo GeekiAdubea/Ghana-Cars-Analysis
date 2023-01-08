@@ -46,17 +46,18 @@ def collect_page_info(url):
     collect_car_details_and_store_in_mongo(all_cars)
 
     #checking if there is more data
-    end = page_content.find("a", {"class": "product__item flex"})
+    end = page_content.find("a", {"class": "js-handle-click-ctr", "text":"500"})
 
     if end is None:
-        logging.info("No more data to scrape")
-    else:
         logging.info("On to the next page")
         #if end returns nothing, then there is more data
         global page_num
         # page_num += 1
         new_url = BASE_URL + "?page={}".format(page_num)
         collect_page_info(new_url)
+
+    else:
+        logging.info("No more data to scrape")
         sys.exit(1)
 
 def collect_car_details_and_store_in_mongo(content):
@@ -103,7 +104,7 @@ def collect_car_details_and_store_in_mongo(content):
         print(extract)
         
         logging.info("Saving to MongoDB")
-        client.all_cars.cars45.insert_one(extract)
+        # client.all_cars.cars45.insert_one(extract)
 
 
 if __name__ == "__main__":
