@@ -52,7 +52,7 @@ def collect_page_info(url):
         logging.info("On to the next page")
         #if end returns nothing, then there is more data
         global page_num
-        # page_num += 1
+        page_num += 1
         new_url = BASE_URL + "?page={}".format(page_num)
         collect_page_info(new_url)
 
@@ -104,7 +104,7 @@ def collect_car_details_and_store_in_mongo(content):
         print(extract)
         
         logging.info("Saving to MongoDB")
-        # client.all_cars.cars45.insert_one(extract)
+        client.all_cars.cars45.insert_one(extract)
 
 
 if __name__ == "__main__":
