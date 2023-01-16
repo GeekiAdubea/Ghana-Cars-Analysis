@@ -6,11 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
-page_num = 1
-
 logging.basicConfig(level=logging.DEBUG)
 
-BASE_URL = 'https://www.cars45.com.gh/listing'
+BASE_URL = 'https://jiji.com.gh/cars'
 page_num = 1
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
@@ -21,17 +19,18 @@ def get_page(url):
     Function for getting a page using a url.
     Sleep for 1 second before every request. Just to be good citizens of the internet.
     """
-    time.sleep(1)
+    time.sleep(2)
     page = requests.get(url, headers=HEADERS)
     page.encoding = 'utf-8'
-    return page.text
+    return page
+    # return page.text
 
 def collect_page_info(url):
     """
     This function collects the car items on every page, parses it and 
     calls the function collect_car_details_and_store_in_mongo to retrieve 
     the cars details and store in mongodb.
-    """
+    """ 
     logging.info("getting page for url: {}".format(url))
     page = get_page(url)
 
@@ -40,25 +39,29 @@ def collect_page_info(url):
     page_content = BeautifulSoup(page.encode('utf-8','ignore'), 'html.parser')
 
     #HTML tag that contains data I want to scrape
-    all_cars = page_content.find_all('a', attrs={'class':'car-feature'})
+    all_cars = page_content.find_all('a', attrs={"class":'b-list-advert__gallery__item js-advert-list-item'})
+
+    print(all_cars)
 
     #calling the collect_car_details_and_store_in_mongo function and passing the all_cars variable to it
     collect_car_details_and_store_in_mongo(all_cars)
 
     #checking if there is more data
-    end = page_content.find("a", {"class": "js-handle-click-ctr", "text":"500"})
+    # end = page_content.find("a", {"class": "product__item flex"})
 
-    if end is None:
-        logging.info("On to the next page")
-        #if end returns nothing, then there is more data
-        global page_num
-        page_num += 1
-        new_url = BASE_URL + "?page={}".format(page_num)
-        collect_page_info(new_url)
+    # if end is None:
+    #     logging.info("No more data to scrape")
+    # else:
+    #     logging.info("On to the next page")
+    #     #if end returns nothing, then there is more data
+    # global page_num
+    #     page_num += 1
+    new_url = BASE_URL
+    collect_page_info(new_url)
+    sys.exit(1)
 
-    else:
-        logging.info("No more data to scrape")
-        sys.exit(1)
+    # collect_page_info(BASE_URL)
+    # sys.exit(1)
 
 def collect_car_details_and_store_in_mongo(content):
     """
@@ -73,38 +76,34 @@ def collect_car_details_and_store_in_mongo(content):
     for each in content:
         link = each.get('href')
 
-        new_link = 'https://cars45.com.gh' + link
+        new_link = 'https://jiji.com.gh/' + link
         req = get_page(new_link)
         r_content = BeautifulSoup(req, 'html.parser')
 
         extract = {}
 
-        listing = r_content.find("h1", attrs={"itemprop":"name"}).text
+        listing = r_content.find("h1", attrs={"class":"qa-advert-title b-advert-title-outer"}).text
         extract['Listing'] = listing
 
-        price = r_content.find("h1", attrs={"itemprop":"name"}).find_next('h5').text
-        # price = r_content.find("span", attrs={"itemprop":"price"}).text
+        price = r_content.find("span", attrs={"class":"qa-advert-price-view-title b-alt-advert-price__text"}).text
         extract['Price'] = price
 
-        details = r_content.find("div", attrs={"class":"main-details__tags flex wrap"}).text
+        details = r_content.find("div", attrs={"class":"b-advert-icon-attributes-container"}).text
         extract['Details'] = details
 
-        overview = r_content.find("div", attrs={"class":"svg flex"}).text
-        extract['Overview'] = overview
-
-        all_data = r_content.find('div', attrs={'class':'general-info grid'})
-        no_class_attribute = all_data.find_all("div", attrs={"class": None})
-        for i in no_class_attribute:
-            extract[i.find('span', attrs={'class':None}).text] = i.find('p', attrs={'class': None}).text
+        all_data = r_content.find('div', attrs={'class':'b-advert-attributes--tiles'})
+        class_attribute = all_data.find_all("div", attrs={"class": 'b-advert-attribute'})
+        for i in class_attribute:
+            extract[i.find('div', attrs={'class':'b-advert-attribute__key'}).text] = i.find('div', attrs={'class':'b-advert-attribute__value'}).text
 
         
         extract['URL'] = new_link
-        extract['Source'] = "Cars45"
+        extract['Source'] = "Jiji"
 
         print(extract)
         
         logging.info("Saving to MongoDB")
-        client.all_cars.cars45.insert_one(extract)
+        # client.all_cars.jiji.insert_one(extract)
 
 
 if __name__ == "__main__":
