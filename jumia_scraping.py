@@ -42,6 +42,8 @@ def collect_page_info(url):
     #HTML tag that contains data I want to scrape
     all_cars = page_content.find_all('a', attrs={'class':'post-link post-vip'})
 
+    print(all_cars)
+
     #calling the collect_car_details_and_store_in_mongo function and passing the all_cars variable to it
     collect_car_details_and_store_in_mongo(all_cars)
 
@@ -84,11 +86,6 @@ def collect_car_details_and_store_in_mongo(content):
         price = r_content.find("span", attrs={"itemprop":"price"}).text
         extract['Price'] = price
 
-        # details = r_content.find("div", attrs={"class":"main-details__tags flex wrap"}).text
-        # extract['Details'] = details
-
-        # overview = r_content.find("div", attrs={"class":"svg flex"}).text
-        # extract['Overview'] = overview
 
         all_data = r_content.find_all('div', attrs={'class':'new-attr-style'})
         # no_class_attribute = all_data.find_all("div", attrs={"class": None})
