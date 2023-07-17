@@ -1,0 +1,5 @@
+#ignore the following files
+jiji_scraping.py
+carsale_scraping.py
+autochek_scraping.py
+cars.csv

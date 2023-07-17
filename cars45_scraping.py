@@ -6,12 +6,10 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
-page_num = 1
-
 logging.basicConfig(level=logging.DEBUG)
 
 BASE_URL = 'https://www.cars45.com.gh/listing'
-page_num = 1
+page_num = 46
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
 
@@ -19,7 +17,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KH
 def get_page(url):
     """
     Function for getting a page using a url.
-    Sleep for 1 second before every request. Just to be good citizens of the internet.
+    Sleep for 2 seconds before every request. Just to be good citizens of the internet.
     """
     time.sleep(1)
     page = requests.get(url, headers=HEADERS)
@@ -53,7 +51,7 @@ def collect_page_info(url):
         #if end returns nothing, then there is more data
         global page_num
         page_num += 1
-        new_url = BASE_URL + "?page={}".format(page_num)
+        new_url = BASE_URL + "/page{}".format(page_num)
         collect_page_info(new_url)
 
     else:
@@ -83,7 +81,6 @@ def collect_car_details_and_store_in_mongo(content):
         extract['Listing'] = listing
 
         price = r_content.find("h1", attrs={"itemprop":"name"}).find_next('h5').text
-        # price = r_content.find("span", attrs={"itemprop":"price"}).text
         extract['Price'] = price
 
         details = r_content.find("div", attrs={"class":"main-details__tags flex wrap"}).text
@@ -101,7 +98,7 @@ def collect_car_details_and_store_in_mongo(content):
         extract['URL'] = new_link
         extract['Source'] = "Cars45"
 
-        print(extract)
+        # print(extract)
         
         logging.info("Saving to MongoDB")
         client.all_cars.cars45.insert_one(extract)

@@ -55,7 +55,7 @@ def collect_page_info(url):
         #if end returns nothing, then there is more data
         global page_num
         # page_num += 1
-        new_url = BASE_URL + "?page={}".format(page_num)
+        new_url = BASE_URL + "?country=gh&page_number={}".format(page_num)
         collect_page_info(new_url)
 
     else:

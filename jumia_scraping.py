@@ -42,7 +42,7 @@ def collect_page_info(url):
     #HTML tag that contains data I want to scrape
     all_cars = page_content.find_all('a', attrs={'class':'post-link post-vip'})
 
-    print(all_cars)
+    # print(all_cars)
 
     #calling the collect_car_details_and_store_in_mongo function and passing the all_cars variable to it
     collect_car_details_and_store_in_mongo(all_cars)
@@ -87,12 +87,23 @@ def collect_car_details_and_store_in_mongo(content):
         extract['Price'] = price
 
 
-        all_data = r_content.find_all('div', attrs={'class':'new-attr-style'})
+        all_data = r_content.find('div', attrs={'class':'new-attr-style'})
+        # print(all_data)
         # no_class_attribute = all_data.find_all("div", attrs={"class": None})
         for i in all_data:
-            extract[i.find('h3', attrs={'class':None}).text] = i.find('h3', attrs={'class':None}).find_next('a').text
+            trys = i.find_all(text=True, recursive=False)
+            for e in trys:
+            # extract['Make'] = i.find('h3', text=Make).find_next('a').text
+            # extract['Model'] = i.find('h3', text='Model').find_next('a').text
+            # extract['Transmission'] = i.find('h3', text='Transmission').find_next('a').text
+            # extract['Fuel'] = i.find('h3', text='Fuel').find_next('a').text
+            # extract['Year'] = i.find('h3', text='Year').find_next('a').text
+            # extract['Mileage'] = i.find('h3', text='Mileage').find_next('a').text
 
-        
+                extract[e.find('h3').text] = e.find('h3', attrs={'class':None}).find_next('a').text
+
+            # print(i)
+
         extract['URL'] = new_link
         extract['Source'] = "Jumia"
 
