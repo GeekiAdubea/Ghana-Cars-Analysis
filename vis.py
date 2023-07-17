@@ -91,14 +91,16 @@ with col2:
     
 with col3:
     year_range = st.slider("Year range:", 
-    value = float(df['Year'].min()),
-    min_value=float(df['Year'].min()), max_value=float(df['Year'].max())
+    value = (df['Year'].min(), df['Year'].max()),
+    min_value=df['Year'].min(), max_value=df['Year'].max(),
+    step=1
     )
 
 with col4:
     price_range = st.slider("Price range:", 
     value=(df['Price'].min(), df['Price'].max()),
-    min_value=df['Price'].min(), max_value=df['Price'].max()
+    min_value=df['Price'].min(), max_value=df['Price'].max(),
+    step=1
     )
 
 df_selection = df.query("(Make == @make) and (Drivetrain == @drivetrain)")
