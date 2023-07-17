@@ -98,7 +98,7 @@ with col3:
 
 with col4:
     price_range = st.slider("Price range:", 
-    value=(int(df['Price'].min()), int(df['Price'].max())),
+    value = (int(df['Price'].min()), int(df['Price'].max())),
     min_value=int(df['Price'].min()), max_value=int(df['Price'].max()),
     step=1
     )

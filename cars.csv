@@ -1,4 +1,4 @@
-Price (GHC),Use,Transmission,Body,Fuel,Year,Mileage (km),Drivetrain,Horse Power,Engine Size (l),Make,Model,Source,Horsepower
+Price,Use,Transmission,Body,Fuel,Year,Mileage (km),Drivetrain,Horse Power,Engine Size (l),Make,Model,Source,Horsepower
 950000.0,Foreign Used,Automatic,Pickup,Petrol,2021,15200.0,All-Wheel Drive,395.0,5.7,Dodge,RAM,Tonaton,395.0
 46500.0,Foreign Used,Automatic,Sedan,Petrol,2007,74000.0,Front-Wheel Drive,140.0,2.0,Kia,Spectra,Tonaton,140.0
 410000.0,Foreign Used,Automatic,SUV,Petrol,2020,26887.0,All-Wheel Drive,272.0,2.0,Acura,RDX,Tonaton,272.0
