@@ -92,7 +92,7 @@ with col2:
 with col3:
     year_range = st.slider("Year range:", 
     value = float(df['Year'].min()),
-    min_value=df['Year'].min(), max_value=df['Year'].max()
+    min_value=float(df['Year'].min()), max_value=float(df['Year'].max())
     )
 
 with col4:
