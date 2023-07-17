@@ -16,12 +16,12 @@ def get_img_as_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-img = get_img_as_base64("cars-lineup.jpg")
+img = get_img_as_base64("images/porsche.jpg")
 
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] >.main {{
-background-image: url("data:cars-lineup/jpg:;base64,{img}");
+background-image: url("data:old-cars/jpg:;base64,{img}");
 background-size: cover;
 background-attachment: local;
 }}
