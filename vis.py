@@ -91,15 +91,15 @@ with col2:
     
 with col3:
     year_range = st.slider("Year range:", 
-    value = (df['Year'].min(), df['Year'].max()),
-    min_value=df['Year'].min(), max_value=df['Year'].max(),
+    value = (int(df['Year'].min()), int(df['Year'].max())),
+    min_value=int(df['Year'].min()), max_value=int(df['Year'].max()),
     step=1
     )
 
 with col4:
     price_range = st.slider("Price range:", 
-    value=(df['Price'].min(), df['Price'].max()),
-    min_value=df['Price'].min(), max_value=df['Price'].max(),
+    value=(int(df['Price'].min()), int(df['Price'].max())),
+    min_value=int(df['Price'].min()), max_value=int(df['Price'].max()),
     step=1
     )
 
