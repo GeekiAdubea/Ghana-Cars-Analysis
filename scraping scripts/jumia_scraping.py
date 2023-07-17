@@ -10,7 +10,7 @@ page_num = 1
 
 logging.basicConfig(level=logging.DEBUG)
 
-BASE_URL = 'https://www.cars45.com.gh/listing'
+BASE_URL = 'https://deals.jumia.com.gh/cars'
 page_num = 1
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
@@ -40,23 +40,25 @@ def collect_page_info(url):
     page_content = BeautifulSoup(page.encode('utf-8','ignore'), 'html.parser')
 
     #HTML tag that contains data I want to scrape
-    all_cars = page_content.find_all('a', attrs={'class':'car-feature'})
+    all_cars = page_content.find_all('a', attrs={'class':'post-link post-vip'})
+
+    # print(all_cars)
 
     #calling the collect_car_details_and_store_in_mongo function and passing the all_cars variable to it
     collect_car_details_and_store_in_mongo(all_cars)
 
     #checking if there is more data
-    end = page_content.find("a", {"class": "product__item flex"})
+    end = page_content.find("li", {"class": "disable next"})
 
     if end is None:
-        logging.info("No more data to scrape")
-    else:
         logging.info("On to the next page")
         #if end returns nothing, then there is more data
         global page_num
         # page_num += 1
         new_url = BASE_URL + "?page={}".format(page_num)
         collect_page_info(new_url)
+    else:
+        logging.info("No more data to scrape")
         sys.exit(1)
 
 def collect_car_details_and_store_in_mongo(content):
@@ -72,38 +74,43 @@ def collect_car_details_and_store_in_mongo(content):
     for each in content:
         link = each.get('href')
 
-        new_link = 'https://cars45.com.gh' + link
+        new_link = 'https://deals.jumia.com.gh' + link
         req = get_page(new_link)
         r_content = BeautifulSoup(req, 'html.parser')
 
         extract = {}
 
-        listing = r_content.find("h1", attrs={"itemprop":"name"}).text
+        listing = r_content.find("header", attrs={"class":"heading-area"}).find_next('span', attrs={'itemprop':'name'}).text
         extract['Listing'] = listing
 
-        price = r_content.find("h1", attrs={"itemprop":"name"}).find_next('h5').text
-        # price = r_content.find("span", attrs={"itemprop":"price"}).text
+        price = r_content.find("span", attrs={"itemprop":"price"}).text
         extract['Price'] = price
 
-        details = r_content.find("div", attrs={"class":"main-details__tags flex wrap"}).text
-        extract['Details'] = details
 
-        overview = r_content.find("div", attrs={"class":"svg flex"}).text
-        extract['Overview'] = overview
+        all_data = r_content.find('div', attrs={'class':'new-attr-style'})
+        # print(all_data)
+        # no_class_attribute = all_data.find_all("div", attrs={"class": None})
+        for i in all_data:
+            trys = i.find_all(text=True, recursive=False)
+            for e in trys:
+            # extract['Make'] = i.find('h3', text=Make).find_next('a').text
+            # extract['Model'] = i.find('h3', text='Model').find_next('a').text
+            # extract['Transmission'] = i.find('h3', text='Transmission').find_next('a').text
+            # extract['Fuel'] = i.find('h3', text='Fuel').find_next('a').text
+            # extract['Year'] = i.find('h3', text='Year').find_next('a').text
+            # extract['Mileage'] = i.find('h3', text='Mileage').find_next('a').text
 
-        all_data = r_content.find('div', attrs={'class':'general-info grid'})
-        no_class_attribute = all_data.find_all("div", attrs={"class": None})
-        for i in no_class_attribute:
-            extract[i.find('span', attrs={'class':None}).text] = i.find('p', attrs={'class': None}).text
+                extract[e.find('h3').text] = e.find('h3', attrs={'class':None}).find_next('a').text
 
-        
+            # print(i)
+
         extract['URL'] = new_link
-        extract['Source'] = "Cars45"
+        extract['Source'] = "Jumia"
 
         print(extract)
         
         logging.info("Saving to MongoDB")
-        client.all_cars.cars45.insert_one(extract)
+        # client.all_cars.jumia.insert_one(extract)
 
 
 if __name__ == "__main__":

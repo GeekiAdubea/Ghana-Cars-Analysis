@@ -39,7 +39,7 @@ def collect_page_info(url):
     logging.info("Parsing page response with BeautifulSoup")
     page_content = BeautifulSoup(page.encode('utf-8','ignore'), 'html.parser')
 
-    print(page_content)
+    # print(page_content)
 
     #HTML tag that contains data I want to scrape
     all_cars = page_content.find_all('a', attrs={'class':'product__item flex'})
@@ -102,7 +102,7 @@ def collect_car_details_and_store_in_mongo(content):
         # print(extract)
         
         logging.info("Saving to MongoDB")
-        # client.all_cars.tonaton.insert_one(extract)
+        client.all_cars.tonaton.insert_one(extract)
 
 
 if __name__ == "__main__":
