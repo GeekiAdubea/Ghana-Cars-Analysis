@@ -1,3 +1,4 @@
 [theme]
-primaryColor="#003399"
-textColor="#000000"
+base = "light"
+primaryColor = "#003399"
+textColor = "#000000"
